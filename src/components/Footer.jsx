@@ -18,6 +18,15 @@ export const Footer = () => {
           >
             LinkedIn
           </a>
+
+          <a
+            href="https://www.facebook.com/?locale=pt_BR"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-white"
+          >
+            Facebook   
+          </a>
           <a
             href="https://www.instagram.com/"
             target="_blank"
@@ -25,14 +34,6 @@ export const Footer = () => {
             className="text-gray-400 hover:text-white"
           >
             Instagram
-          </a>
-          <a
-            href="https://www.facebook.com/?locale=pt_BR"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-white"
-          >
-            Facebook
           </a>
         </div>
       </div>
