@@ -14,24 +14,94 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
+import { DialogFooter } from "./ui/dialog"
+import { DialogClose } from "@radix-ui/react-dialog"
+import { MinusIcon, PlusIcon } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const FormSchema = z.object({
-  username: z.string().min(2, {
+  title: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
+  price: z.optional(z.string()), //number
+  categoryId: z.optional(z.string()),
+  img: z.optional(z.string()),
+  img0: z.optional(z.string()),
+  img1: z.optional(z.string()),
+  img2: z.optional(z.string()),
+  img3: z.optional(z.string()),
 })
 
-export function ProductForm() {
+export function ProductForm({ action, product }) {
+  const [categories, setCategories] = useState([]);
+  const [inputs, setInputs] = useState([]);
+
+  useEffect(() => {
+    fetch('https://api.escuelajs.co/api/v1/categories')
+      .then(response => response.json())
+      .then(categories => setCategories(categories))
+      .catch(error => console.error('Erro ao buscar dados:', error));
+
+    if (action == 'update') {
+      let arrayInputs = product.images.map(img => img);
+
+      setInputs(arrayInputs)
+    }
+  }, []);
+
+  
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      username: "",
+      title: action == 'update' ? product.title : "",
+      price: action == 'update' ? product.price.toString() : "",
+      img: action == 'update' ? product.images[0]: "",
+      img0: action == 'update' ? product.images[1] : "",
+      img1: action == 'update' ? product.images[2] : "",
+      img2: action == 'update' ? product.images[3] : "",
+      img3: action == 'update' ? product.images[4] : "",
+      categoryId: action == 'update' ? product.category.name : "",
     },
   })
 
-  function onSubmit(data) {
+  const onSubmit = async (data) => {
+    console.log('submit');
+    console.log('data', data);
+
+    let images = [data.img];
+    for (let i = 0; i < 4; i++) {
+      if (data[`img${i}`]) images = [...images, data[`img${i}`]]
+    }
+
+    const categoryId = categories.find(category => category.name == data.categoryId)?.id
+
+    console.log('categoryId', categoryId);
+
+    const request = new Request(`https://api.escuelajs.co/api/v1/products/${product.id}`, {
+      method: "PUT",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: data.title,
+        price: parseInt(data.price),
+        images,
+        categoryId,
+        description: action == 'update' ? product.description : 'Standard description'
+      }),
+    });
+    
+    // Will throw: "Body has already been consumed."
+    const response2 = await fetch(request);
+    console.log(response2.status);
+    
     toast({
       title: "You submitted the following values:",
       description: (
@@ -42,26 +112,125 @@ export function ProductForm() {
     })
   }
 
+  console.log('categories', categories);
+  console.log('product', product);
+  console.log('inputs', inputs);
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="username"
+          name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Produto</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="Nome do produto" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Preço</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="Preço do produto" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="categoryId"
+          render={({ field }) => (
+            <FormItem>
+              {console.log('field', field)}
+              <FormLabel>Categoria</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a verified email to display" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem value={category.name}>{category.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="img"
+          render={({ field }) => (
+            <FormItem>
+              <div>
+                <FormLabel>URL da Imagem</FormLabel>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="h-6 w-6 p-0 ml-2"
+                  onClick={() => {
+                    if (inputs.length <= 3) return setInputs([...inputs, ""])
+                  }}
+                >
+                  <PlusIcon className="h-2 w-2" />
+                </Button>
+                <Button type="button" variant="secondary" className="h-6 w-6 p-0 ml-2" onClick={() => setInputs(inputs.filter((item, i) => i !== inputs.length - 1))}>
+                  <MinusIcon className="h-2 w-2" />
+                </Button>
+              </div>
+
+              <FormControl>
+                <Input placeholder="https://..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
+        {inputs.map((item, i) => {
+          return (
+            <FormField
+              control={form.control}
+              key={i}
+              name={`img${i}`}
+              render={({ field }) => (
+                <FormItem style={{ marginTop: '12px' }}>
+                  <FormControl  >
+                    <Input placeholder="https://..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )
+        })}
+
+        <DialogFooter className="sm:justify-between">
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Close
+            </Button>
+          </DialogClose>
+
+          <Button type="submit">
+            Salvar
+          </Button>
+
+        </DialogFooter>
       </form>
     </Form>
   )

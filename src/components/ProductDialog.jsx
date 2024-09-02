@@ -32,26 +32,7 @@ const FormSchema = z.object({
   }),
 })
 
-export function ProductDialog({ children, action }) {
-
-  const form = useForm({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      username: "",
-    },
-  })
-
-  function onSubmit(data) {
-    console.log('data', data);
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
-  }
+export function ProductDialog({ children, action, product }) {
 
   return (
     <Dialog>
@@ -64,37 +45,8 @@ export function ProductDialog({ children, action }) {
         </DialogHeader>
 
 
+        <ProductForm product={product} action={action} />
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-6">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input placeholder="shadcn" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter className="sm:justify-between">
-              <DialogClose asChild>
-                <Button type="button" variant="secondary">
-                  Close
-                </Button>
-              </DialogClose>
-
-              <Button type="submit">
-                Salvar
-              </Button>
-
-            </DialogFooter>
-          </form>
-        </Form>
       </DialogContent>
     </Dialog>
   )
