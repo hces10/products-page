@@ -58,13 +58,13 @@ export function ProductForm({ action, product }) {
     }
   }, []);
 
-  
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: action == 'update' ? product.title : "",
       price: action == 'update' ? product.price.toString() : "",
-      img: action == 'update' ? product.images[0]: "",
+      img: action == 'update' ? product.images[0] : "",
       img0: action == 'update' ? product.images[1] : "",
       img1: action == 'update' ? product.images[2] : "",
       img2: action == 'update' ? product.images[3] : "",
@@ -76,9 +76,10 @@ export function ProductForm({ action, product }) {
   const onSubmit = async (data) => {
     console.log('submit');
     console.log('data', data);
+    console.log('inputs', inputs);
 
     let images = [data.img];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < inputs.length; i++) {
       if (data[`img${i}`]) images = [...images, data[`img${i}`]]
     }
 
@@ -86,8 +87,8 @@ export function ProductForm({ action, product }) {
 
     console.log('categoryId', categoryId);
 
-    const request = new Request(`https://api.escuelajs.co/api/v1/products/${product.id}`, {
-      method: "PUT",
+    const request = new Request(`https://api.escuelajs.co/api/v1/products/${action == 'update' ? product.id : ""}`, {
+      method: action == 'update' ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: data.title,
@@ -97,11 +98,9 @@ export function ProductForm({ action, product }) {
         description: action == 'update' ? product.description : 'Standard description'
       }),
     });
-    
-    // Will throw: "Body has already been consumed."
-    const response2 = await fetch(request);
-    console.log(response2.status);
-    
+
+    const response = await fetch(request);
+
     toast({
       title: "You submitted the following values:",
       description: (
@@ -225,11 +224,11 @@ export function ProductForm({ action, product }) {
               Close
             </Button>
           </DialogClose>
-
-          <Button type="submit">
-            Salvar
-          </Button>
-
+          <DialogClose>
+            <Button type="submit">
+              Salvar
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </form>
     </Form>
