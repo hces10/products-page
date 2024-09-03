@@ -1,7 +1,6 @@
 import { Button } from "./ui/button"
 import { PlusIcon, ShoppingBag } from "lucide-react"
 import { ProductDialog } from "./ProductDialog"
-import { useEffect, useState } from "react";
 
 export function Header({ selectCategory, active }) {
 

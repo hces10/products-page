@@ -1,9 +1,7 @@
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -21,10 +19,7 @@ export function ProductDialog({ children, action, product }) {
         <DialogHeader>
           <DialogTitle>{action == 'update' ? 'Atualizar' : 'Criar'} Produto</DialogTitle>
         </DialogHeader>
-
-
         <ProductForm product={product} action={action} />
-
       </DialogContent>
     </Dialog>
   )

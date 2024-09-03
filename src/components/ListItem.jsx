@@ -14,7 +14,6 @@ import { PaginationProduct } from './PaginationProduct';
 const DataDisplay = ({ active }) => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  console.log('active', active);
 
   useEffect(() => {
     setCurrentPage(0)
@@ -36,8 +35,6 @@ const DataDisplay = ({ active }) => {
     if (data && !data.length) return;
     setCurrentPage(currentPage + 1);
   }
-  console.log('data', data);
-  console.log('dataLength', data.length);
 
   return (
     <div className="flex flex-wrap gap-4 justify-evenly mx-12">

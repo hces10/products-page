@@ -1,14 +1,10 @@
-"use client"
-
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
 import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,10 +25,10 @@ import { MinusIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 
 const FormSchema = z.object({
-  title: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  title: z.string().min(10, {
+    message: "Nome do produto deve ter pelo menos 10 caracteres.",
   }),
-  price: z.optional(z.string()), //number
+  price: z.optional(z.string()),
   categoryId: z.optional(z.string()),
   img: z.optional(z.string()),
   img0: z.optional(z.string()),
@@ -52,8 +48,7 @@ export function ProductForm({ action, product }) {
       .catch(error => console.error('Erro ao buscar dados:', error));
 
     if (action == 'update') {
-      let arrayInputs = product.images.map(img => img);
-
+      const arrayInputs = product.images.map(img => img);
       setInputs(arrayInputs)
     }
   }, []);
@@ -74,18 +69,12 @@ export function ProductForm({ action, product }) {
   })
 
   const onSubmit = async (data) => {
-    console.log('submit');
-    console.log('data', data);
-    console.log('inputs', inputs);
-
     let images = [data.img];
     for (let i = 0; i < inputs.length; i++) {
       if (data[`img${i}`]) images = [...images, data[`img${i}`]]
     }
 
     const categoryId = categories.find(category => category.name == data.categoryId)?.id
-
-    console.log('categoryId', categoryId);
 
     const request = new Request(`https://api.escuelajs.co/api/v1/products/${action == 'update' ? product.id : ""}`, {
       method: action == 'update' ? 'PUT' : 'POST',
@@ -99,8 +88,7 @@ export function ProductForm({ action, product }) {
       }),
     });
 
-    const response = await fetch(request);
-
+    await fetch(request);
     toast({
       title: "You submitted the following values:",
       description: (
@@ -110,10 +98,6 @@ export function ProductForm({ action, product }) {
       ),
     })
   }
-
-  console.log('categories', categories);
-  console.log('product', product);
-  console.log('inputs', inputs);
 
   return (
     <Form {...form}>
@@ -150,7 +134,6 @@ export function ProductForm({ action, product }) {
           name="categoryId"
           render={({ field }) => (
             <FormItem>
-              {console.log('field', field)}
               <FormLabel>Categoria</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
@@ -190,7 +173,6 @@ export function ProductForm({ action, product }) {
                   <MinusIcon className="h-2 w-2" />
                 </Button>
               </div>
-
               <FormControl>
                 <Input placeholder="https://..." {...field} />
               </FormControl>
@@ -198,7 +180,6 @@ export function ProductForm({ action, product }) {
             </FormItem>
           )}
         />
-
 
         {inputs.map((item, i) => {
           return (
