@@ -1,5 +1,6 @@
 Pagina de Produtos - Catálogo
 Desenvolvida utilizando as tecnologias: React js, Next.js, Tailwind CSS, Shadcn, Javascript
+
 Utilizando como api: [https://fakeapi.platzi.com/](https://fakeapi.platzi.com/)
 
 ## Instruções para rodar o projeto local
@@ -14,6 +15,8 @@ Pode fazer todos os tipos de operações de CRUD, foi pensado utilizando pratica
 
 ## Futuras implementações
 
-Fazer com que apareçam todas as imagens do produto
+Mostrar todas as imagens do produto
+
 Ordenação
+
 Filtros
