@@ -6,7 +6,7 @@ import DataDisplay from "@/components/ListItem";
 import { useState } from "react";
 
 export default function Home() {
-  const [activeCategory, setActiveCategory] = useState(19);
+  const [activeCategory, setActiveCategory] = useState(2);
 
   const selectCategory = (category) => {
     console.log('category', category);
@@ -17,10 +17,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col w-full">
+      <main className="flex-grow">
       <div className="flex w-full justify-center">
-        <Header selectCategory={selectCategory} />
+        <Header active={activeCategory} selectCategory={selectCategory} />
       </div>
       <DataDisplay active={activeCategory} />
+      </main>
       <Footer />
     </div>
   );

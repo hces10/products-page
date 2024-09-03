@@ -224,7 +224,7 @@ export function ProductForm({ action, product }) {
               Close
             </Button>
           </DialogClose>
-          <DialogClose>
+          <DialogClose asChild>
             <Button type="submit">
               Salvar
             </Button>

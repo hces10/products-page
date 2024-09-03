@@ -1,6 +1,6 @@
 export const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white p-4">
+    <footer className="w-full bg-gray-800 text-white p-4">
       <div className="container mx-auto text-center">
         <p>© 2024 HC Listagem de Produtos Inc. Todos os direitos reservados.</p>
         <div className="mt-4">

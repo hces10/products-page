@@ -9,26 +9,51 @@ import Image from 'next/image';
 import { TrashIcon, UpdateIcon } from '@radix-ui/react-icons';
 import { ProductDialog } from './ProductDialog';
 import { DeleteDialog } from './DeleteDialog';
+import { PaginationProduct } from './PaginationProduct';
 
 const DataDisplay = ({ active }) => {
   const [data, setData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
   console.log('active', active);
 
   useEffect(() => {
-    fetch(`https://api.escuelajs.co/api/v1/categories/${active}/products`)
+    setCurrentPage(0)
+  }, [active]);
+
+  useEffect(() => {
+    fetch(`https://api.escuelajs.co/api/v1/categories/${active}/products?offset=${currentPage * 5}&limit=5`)
       .then(response => response.json())
       .then(data => setData(data))
       .catch(error => console.error('Erro ao buscar dados:', error));
-  }, [active]);
+  }, [active, currentPage]);
 
+  const previousPage = () => {
+    if (currentPage <= 0) return;
+    setCurrentPage(currentPage - 1);
+  }
+
+  const nextPage = () => {
+    if (data && !data.length) return;
+    setCurrentPage(currentPage + 1);
+  }
   console.log('data', data);
+  console.log('dataLength', data.length);
 
   return (
     <div className="flex flex-wrap gap-4 justify-evenly mx-12">
+      {window.innerWidth < 430 && (
+        <PaginationProduct
+          currentPage={currentPage}
+          nextPage={nextPage}
+          previousPage={previousPage}
+        />
+      )}
+
       {data.map(item => {
         const imgStringError = (imgURL) => {
-          const stringArray = imgURL.split('')
+          //const stringArray = imgURL.split('')
           if (imgURL.includes('[')) return true
+          if (imgURL.includes('"')) return true
           return false
         }
 
@@ -36,11 +61,11 @@ const DataDisplay = ({ active }) => {
           <Card className="w-44 p-0 m-0 flex flex-col justify-between" key={item.id}>
             <CardContent className="p-0">
               {imgStringError(item.images[0]) ? (
-                <div className='w-full h-40 justify-center items-center flex p-5 text-center bg-slate-200 rounded-t' >
+                <div style={{ height: '174px' }} className='w-full justify-center items-center flex p-5 text-center bg-slate-200 rounded-t' >
                   <p>Foto não encontrada</p>
                 </div>
               ) : (
-                <Image width="320px" height="320px" alt='product image' src={item.images[0]} />
+                <Image width="320" height="320" alt='product image' src={item.images[0]} />
               )}
 
             </CardContent>
@@ -65,6 +90,7 @@ const DataDisplay = ({ active }) => {
           </Card>
         )
       })}
+      <PaginationProduct nextPage={nextPage} previousPage={previousPage} currentPage={currentPage}  />
     </div>
   );
 };

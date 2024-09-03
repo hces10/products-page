@@ -39,7 +39,7 @@ export function DeleteDialog({ children, productId }) {
               Fechar
             </Button>
           </DialogClose>
-          <DialogClose>
+          <DialogClose asChild>
             <Button onClick={deleteProduct} variant="destructive">
               Confirmar
             </Button>
